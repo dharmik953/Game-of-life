@@ -31,7 +31,7 @@ public class PlayPage {
         }
 
         showMatrix(checkboxes);
-//        GamePage.frame.add(prevButton(checkboxes));
+        GamePage.frame.add(prevButton());
         GamePage.frame.add(nextButton(checkboxes));
 
         GamePage.frame.pack();
@@ -51,8 +51,9 @@ public class PlayPage {
         }
     }
 
-    private static JButton prevButton(JCheckBox[][] checkboxes) {
+    private static JButton prevButton() {
         JButton printButton = new JButton("Previous Generation");
+        System.out.println("index--");
         printButton.addActionListener(e -> showMatrix(list.get(--index)));
         return printButton;
     }
@@ -66,7 +67,9 @@ public class PlayPage {
                     getNewGeneration(checkboxes);
                 } else {
                     System.out.println("It will last endlessly");
-                    showTile(checkboxes,list);
+                    JLabel label = new JLabel("This will last endlessly");
+                    GamePage.frame.add(label);
+                    showTile(checkboxes, list);
                 }
             } else {
                 showMatrix(list.get(++index));
@@ -81,7 +84,6 @@ public class PlayPage {
         for (int i = 1; i < row - 1; i++) {
             for (int j = 1; j < column - 1; j++) {
                 naighbourMetrix[i][j] = getNeighbour(i, j, checkboxes);
-                System.out.println(i + ", " + j + "naighboures = " + naighbourMetrix[i][j]);
             }
         }
 
@@ -104,6 +106,7 @@ public class PlayPage {
         list.add(checkboxes);
     }
 
+    // returns the number of neighbor of {i,j} cell.
     private static int getNeighbour(int i, int j, JCheckBox[][] matrix) {
         int numberOfNeighbours = 0;
 
@@ -119,6 +122,7 @@ public class PlayPage {
         return numberOfNeighbours;
     }
 
+    // shows the tile when repetition occur.
     private static void showTile(JCheckBox[][] checkboxes, List<JCheckBox[][]> list) {
         int diff = 0;
         for (int i = 0; i < list.size(); i++) {
@@ -127,8 +131,12 @@ public class PlayPage {
             }
 
         }
-        GamePage.frame.add(new JLabel("It will repeat from last " + diff + "generations")).setVisible(true);
-    }
 
+        JOptionPane.showMessageDialog(GamePage.frame, "It will repeat from last " + diff + " generations", "Error", JOptionPane.ERROR_MESSAGE);
+
+        GamePage.frame.setSize(350, 350);
+        GamePage.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        System.out.println("It will repeat from last " + diff + " generations");
+    }
 
 }

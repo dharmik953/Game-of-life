@@ -3,8 +3,7 @@ public class Main {
 
 
         new GamePage().inputPage();
-//        gamePage.inputPage();
-//    gamePage.playGame();
+
 
     }
 }
