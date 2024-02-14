@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
@@ -44,17 +46,25 @@ public class PlayPage {
             for (int j = 0; j < checkboxes[0].length; j++) {
                 int finalJ = j;
                 int finalI = i;
-                if (checkboxes[i][j].isSelected())
-                    SwingUtilities.invokeLater(() -> checkboxes[finalI][finalJ].setSelected(true));
+                if (checkboxes[i][j].isSelected()) SwingUtilities.invokeLater(() -> checkboxes[finalI][finalJ].setSelected(true));
                 else SwingUtilities.invokeLater(() -> checkboxes[finalI][finalJ].setSelected(false));
             }
         }
+
+        GamePage.frame.pack();
+        GamePage.frame.repaint();
     }
 
     private static JButton prevButton() {
         JButton printButton = new JButton("Previous Generation");
         System.out.println("index--");
-        printButton.addActionListener(e -> showMatrix(list.get(--index)));
+        printButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!list.isEmpty()) showMatrix(list.get(index--));
+            }
+        });
+//        if (!list.isEmpty()) printButton.addActionListener(e -> showMatrix(list.get(index--)));
         return printButton;
     }
 
@@ -62,25 +72,42 @@ public class PlayPage {
         JButton printButton = new JButton("Next Generation");
         printButton.addActionListener(e -> {
             if (set.size() == index) {
-                if (!set.contains(checkboxes)) {
+                boolean found = false;
+                for (JCheckBox[][] setItem : set) {
+                    if (arraysEqual(setItem, checkboxes)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
                     index++;
                     getNewGeneration(checkboxes);
                 } else {
-                    System.out.println("It will last endlessly");
-                    JLabel label = new JLabel("This will last endlessly");
-                    GamePage.frame.add(label);
                     showTile(checkboxes, list);
                 }
             } else {
-                showMatrix(list.get(++index));
+                showMatrix(list.get(index++));
             }
         });
+
         return printButton;
     }
 
+    private static boolean arraysEqual(JCheckBox[][] arr1, JCheckBox[][] arr2) {
+        for (int i = 0; i < arr1.length; i++) {
+            for (int j = 0; j < arr1[i].length; j++) {
+                if (arr1[i][j].isSelected() != arr2[i][j].isSelected()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
     private static void getNewGeneration(JCheckBox[][] checkboxes) {
 
-        System.out.println("naighbour metrix");
+       // creating the neighbor matrix.
         for (int i = 1; i < row - 1; i++) {
             for (int j = 1; j < column - 1; j++) {
                 naighbourMetrix[i][j] = getNeighbour(i, j, checkboxes);
@@ -93,6 +120,7 @@ public class PlayPage {
                 if ((numberOfNeighbours == 3 || numberOfNeighbours == 2) && checkboxes[i][j].isSelected())
                     checkboxes[i][j].setSelected(true);
                 if (numberOfNeighbours == 3) checkboxes[i][j].setSelected(true);
+                if (numberOfNeighbours < 2 || numberOfNeighbours>=4) checkboxes[i][j].setSelected(false);
             }
         }
 
